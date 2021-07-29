@@ -1,9 +1,10 @@
 import { Reducer } from "redux";
 import produce from "immer";
-import { ICartState } from "./types";
+import { ActionType, ICartState } from "./types";
 
 const INITIAL_STATE: ICartState = {
   items: [],
+  failedStockCheck:[],
 };
 
 //Esta em "arrow function" para poder tipar a função como reducer
@@ -13,7 +14,7 @@ const cart: Reducer<ICartState> = (state = INITIAL_STATE, action) => {
   //o produce(immer) automatiza o tratamento da imutabilidade do estado para alteralo
   return produce(state, (draft) => {
     switch (action.type) {
-      case "ADD_PRODUCT_TO_CART": {
+      case ActionType.addProductToCartSuccess: {
         const { product } = action.payload;
 
         const productInCartIndex = draft.items.findIndex(
@@ -32,6 +33,11 @@ const cart: Reducer<ICartState> = (state = INITIAL_STATE, action) => {
         }
 
         break;
+      }
+      case ActionType.addProductToCartFailure: {
+        draft.failedStockCheck.push(action.payload.productId);
+
+        break
       }
       default: {
         return draft;
